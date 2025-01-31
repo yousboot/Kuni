@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Note</title>
+</head>
+<body>
+    <h1>Edit {{ title }}</h1>
+    <form method="post">
+        <textarea name="content" rows="10" cols="50">{{ content }}</textarea>
+        <button type="submit">Save</button>
+    </form>
+    <a href="{{ url_for('index') }}">Back</a>
+</body>
+</html>
+
