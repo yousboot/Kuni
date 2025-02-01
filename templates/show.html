@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>View Note</title>
-    <style>
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 600px;
-            margin: auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-    </style>
-</head>
-<body>
-    <div class="modal-content">
-        <h2>{{ title }}</h2>
-        <div>{{ content | safe }}</div>
-        <button onclick="window.history.back()">Close</button>
+    <link
+      href="/static/styles.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="p-6">
+      <h2 class="text-2xl font-semibold mb-4">{{ title }}</h2>
+      <div class="text-gray-700">{{ content | safe }}</div>
+      <button
+        onclick="closeModal()"
+        class="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+      >
+        Close
+      </button>
     </div>
-</body>
+  </body>
 </html>
-

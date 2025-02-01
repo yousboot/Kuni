@@ -1,0 +1,42 @@
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.backdrop-blur-custom {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari */
+}
+
+.bg-custom-sidebar {
+  background-color: #af937e;
+}
+
+.bg-custom-content {
+  background-color: #f1f1ef;
+}
+
+.bg-custom-color {
+  background-color: #f7f6f4;
+}
+
+.bg-folder {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
