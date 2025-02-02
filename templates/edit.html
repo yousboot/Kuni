@@ -1,20 +1,230 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>Edit Note</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="/static/styles.css"
+      rel="stylesheet"
+    />
+    <script
+      src="/static/script.js"
+      defer
+    ></script>
+    <style>
+      #editor { font-family: "Garamond", serif; }
+      #editor h1, #editor h2 { font-family: "Madani", sans-serif; }
+      #editor pre code, #editor table { font-family: initial; }
+    </style>
   </head>
-  <body>
-    <h1>Edit {{ title }}</h1>
-    <form method="post">
+  <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md p-4 flex justify-between items-center">
+      <h1 class="text-2xl font-madani">Editing: {{ title }}</h1>
+      <button
+        id="saveButton"
+        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        data-note-id="{{ note_id }}"
+      >
+        Save
+      </button>
+    </header>
+    <div class="flex flex-col items-center mt-4">
+      <!-- Toolbar -->
+      <div
+        class="bg-white shadow p-3 rounded-md flex gap-2 w-3/4 justify-center"
+      >
+        <button
+          class="tool-btn"
+          onclick="showPopup('imagePopup')"
+        >
+          Image
+        </button>
+        <button
+          class="tool-btn"
+          onclick="showPopup('videoPopup')"
+        >
+          Video
+        </button>
+        <button
+          class="tool-btn"
+          onclick="showPopup('tablePopup')"
+        >
+          Table
+        </button>
+        <button
+          class="tool-btn"
+          onclick="showPopup('codePopup')"
+        >
+          Code
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('h1')"
+        >
+          Title
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('h2')"
+        >
+          Subtitle
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('h3')"
+        >
+          Paragraph Title
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('p')"
+        >
+          Paragraph
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('a')"
+        >
+          Link
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('blockquote')"
+        >
+          Quote
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('ol')"
+        >
+          Numbered List
+        </button>
+        <button
+          class="tool-btn"
+          onclick="insertElement('ul')"
+        >
+          Bullet List
+        </button>
+      </div>
+      <!-- Editable Content -->
+      <div
+        id="editor"
+        contenteditable="true"
+        class="bg-white shadow-md p-6 rounded-md mt-4 w-3/4 min-h-[400px] border border-gray-300 focus:ring focus:ring-blue-200"
+      >
+        {{ content | safe }}
+      </div>
+    </div>
+
+    <!-- Popups -->
+    <div
+      id="imagePopup"
+      class="popup hidden"
+    >
+      <input
+        type="text"
+        id="imageUrl"
+        placeholder="Enter Image URL"
+        class="input-field"
+      />
+      <input
+        type="file"
+        id="imageUpload"
+        accept="image/*"
+      />
+      <button
+        onclick="uploadImage()"
+        class="popup-btn"
+      >
+        Upload
+      </button>
+      <button
+        onclick="insertImage(document.getElementById('imageUrl').value)"
+        class="popup-btn"
+      >
+        Insert
+      </button>
+    </div>
+
+    <div
+      id="videoPopup"
+      class="popup hidden"
+    >
+      <input
+        type="text"
+        id="videoUrl"
+        placeholder="Enter YouTube URL"
+        class="input-field"
+      />
+      <input
+        type="file"
+        id="videoUpload"
+        accept="video/*"
+      />
+      <button
+        onclick="uploadVideo()"
+        class="popup-btn"
+      >
+        Upload
+      </button>
+      <button
+        onclick="insertVideo()"
+        class="popup-btn"
+      >
+        Insert
+      </button>
+    </div>
+
+    <div
+      id="tablePopup"
+      class="popup hidden"
+    >
+      <input
+        type="number"
+        id="tableRows"
+        placeholder="Rows"
+        class="input-field"
+      />
+      <input
+        type="number"
+        id="tableCols"
+        placeholder="Columns"
+        class="input-field"
+      />
+      <button
+        onclick="insertTable()"
+        class="popup-btn"
+      >
+        Insert
+      </button>
+    </div>
+
+    <div
+      id="codePopup"
+      class="popup hidden"
+    >
+      <input
+        type="text"
+        id="codeLanguage"
+        placeholder="Enter Language (e.g., python)"
+        class="input-field"
+      />
       <textarea
-        name="content"
-        rows="10"
-        cols="50"
+        id="codeContent"
+        class="input-field"
+        placeholder="Enter code..."
+      ></textarea>
+      <button
+        onclick="insertCode()"
+        class="popup-btn"
       >
-{{ content }}</textarea
-      >
-      <button type="submit">Save</button>
-    </form>
-    <a href="{{ url_for('index') }}">Back</a>
+        Insert
+      </button>
+    </div>
   </body>
 </html>

@@ -1,3 +1,47 @@
+@font-face {
+  font-family: "Janna";
+  src: url("/static/fonts/Janna.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Garamond";
+  src: url("/static/fonts/Garamond.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "FuturaBkBt";
+  src: url("/static/fonts/FuturaBkBt.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Madani";
+  src: url("/static/fonts/madani.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-janna {
+  font-family: "Janna", sans-serif;
+}
+
+.font-garamond {
+  font-family: "Garamond", serif;
+}
+
+.font-futurabkbt {
+  font-family: "FuturaBkBt", sans-serif;
+}
+
+.font-madani {
+  font-family: "Madani", sans-serif;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -27,6 +71,15 @@
   background-color: #af937e;
 }
 
+.bg-custom-slidebar {
+  background-color: #e9e2dd;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.bg-custom-slidebar:hover {
+  background-color: #cdc0b7;
+}
+
 .bg-custom-content {
   background-color: #f1f1ef;
 }
@@ -39,4 +92,53 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.tool-btn {
+  background: #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tool-btn:hover {
+  background: #cbd5e1;
+}
+
+.popup {
+  background: white;
+  padding: 10px;
+  border: 1px solid gray;
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.hidden {
+  display: none;
+}
+.input-field {
+  margin: 5px;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+.popup-btn {
+  background: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.prose {
+  font-family: "Garamond", serif;
+}
+.prose h1,
+.prose h2 {
+  font-family: "Madani", sans-serif;
+}
+.prose pre code,
+.prose table {
+  font-family: initial;
 }

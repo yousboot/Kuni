@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>{{ title }}</title>
+    <link
+      href="/static/styles.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .prose, .prose p { font-family: "Garamond", serif !important; }
+      .prose h1, .prose h2 { font-family: "Madani", sans-serif !important; }
+    </style>
+  </head>
+  <body class="bg-custom-color text-gray-800">
+    <div class="max-w-4xl mx-auto mt-10 p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-madani">{{ title }}</h1>
+        <a
+          href="{{ url_for('edit_note', note_id=note_id) }}"
+          class="px-4 py-2 rounded"
+        >
+          ✏️
+        </a>
+      </div>
+      <div class="prose max-w-none">{{ content | safe }}</div>
+    </div>
+  </body>
+</html>

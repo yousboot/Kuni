@@ -36,7 +36,7 @@
             name="name"
             placeholder="New Folder"
             required
-            class="w-full p-2 rounded-full border-white focus:border-white focus:ring-white focus:outline-none"
+            class="w-full p-2 pl-4 rounded-full border-white focus:border-white focus:ring-white focus:outline-none"
           />
 
           <button
@@ -53,7 +53,9 @@
             style="background-image: url('/static/img/folder.jpg');"
             onclick="window.location='{{ url_for('index', folder_id=folder[0]) }}';"
           >
-            <span class="ml-2 text-white text-opacity-60 folder-name">
+            <span
+              class="font-janna font-bold mt-1 ml-4 text-white text-opacity-60 folder-name"
+            >
               {{ folder[1][:25] ~ '...' if folder[1]|length > 28 else folder[1]
               }}
             </span>
@@ -89,18 +91,18 @@
         <form
           action="{{ url_for('add_note') }}"
           method="post"
-          class="flex gap-4 mb-10"
+          class="flex gap-2 mb-10 bg-white px-4 py-3 rounded-full"
         >
           <input
             type="text"
             name="title"
             placeholder="Note Title"
             required
-            class="w-full p-2 border rounded-md"
+            class="w-full p-3 pl-6 rounded-l-3xl rounded-r-md border-white focus:border-white focus:ring-white focus:outline-none"
           />
           <select
             name="folder_id"
-            class="p-2 border rounded-md"
+            class="p-2 bg-custom-slidebar rounded-md"
           >
             {% for folder in folders %}
             <option value="{{ folder[0] }}">{{ folder[1] }}</option>
@@ -108,27 +110,29 @@
           </select>
           <button
             type="submit"
-            class="bg-blue-500 text-white px-4 py-2 rounded-md"
+            class="bg-custom-sidebar  text-white text-xl rounded-r-3xl rounded-l-md text-white p-3 py-1 rounded-full"
           >
-            Add
+            +
           </button>
         </form>
         <ul class="space-y-4 flex-grow overflow-y-auto">
           {% for note in notes %}
           <li
-            class=" p-4 rounded-lg shadow-sm flex justify-between items-center"
+            class=" px-6 py-5 rounded-xl text-black text-opacity-50 bg-custom-slidebar cursor-pointer flex justify-between items-center"
           >
-            <span class="bg-gray-100">{{ note[1] }}</span>
+            <a
+              href="{{ url_for('view_note', note_id=note[0]) }}"
+              class="w-4/5"
+            >
+              <span class="ml-4 font-futurabkbt text-lg font-bold">
+                {{ note[1] }}
+              </span>
+            </a>
+
             <div class="space-x-4">
-              <button
-                onclick="showNote({{ note[0] }})"
-                class="text-blue-500 hover:underline"
-              >
-                📄
-              </button>
               <a
                 href="{{ url_for('edit_note', note_id=note[0]) }}"
-                class="text-yellow-500 hover:underline"
+                class="text-yellow-500"
               >
                 ✏️
               </a>

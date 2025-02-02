@@ -1,14 +1,27 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify
 import sqlite3
 import os
 import markdown
+from flask_cors import CORS
+import requests
 
 app = Flask(__name__)
 DB_FILE = 'notes.db'
 NOTES_DIR = 'notes'
+UPLOAD_IMAGE_FOLDER = os.path.join(NOTES_DIR, 'images')
+UPLOAD_VIDEO_FOLDER = os.path.join(NOTES_DIR, 'videos')
 
-if not os.path.exists(NOTES_DIR):
-    os.makedirs(NOTES_DIR)
+app.config['UPLOAD_IMAGE_FOLDER'] = UPLOAD_IMAGE_FOLDER
+app.config['UPLOAD_VIDEO_FOLDER'] = UPLOAD_VIDEO_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB limit for videos
+
+CORS(app, resources={r"/upload_image": {"origins": "*"}, r"/upload_video": {"origins": "*"}})
+
+if not os.path.exists(UPLOAD_IMAGE_FOLDER):
+    os.makedirs(UPLOAD_IMAGE_FOLDER)
+
+if not os.path.exists(UPLOAD_VIDEO_FOLDER):
+    os.makedirs(UPLOAD_VIDEO_FOLDER)
 
 def init_db():
     with sqlite3.connect(DB_FILE) as conn:
@@ -124,7 +137,6 @@ def show_note(note_id):
     html_content = markdown.markdown(content)
     return render_template('show.html', title=note[0], content=html_content)
 
-
 @app.route('/delete/<int:note_id>', methods=['POST'])
 def delete_note(note_id):
     with sqlite3.connect(DB_FILE) as conn:
@@ -136,6 +148,76 @@ def delete_note(note_id):
             c.execute("DELETE FROM notes WHERE id = ?", (note_id,))
             conn.commit()
     return redirect(url_for('index'))
+
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    filepath = os.path.join(app.config['UPLOAD_IMAGE_FOLDER'], file.filename)
+    file.save(filepath)
+    return jsonify({'url': f'/notes/images/{file.filename}'})
+
+@app.route('/upload_video', methods=['POST'])
+def upload_video():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    filepath = os.path.join(app.config['UPLOAD_VIDEO_FOLDER'], file.filename)
+    file.save(filepath)
+    return jsonify({'url': f'/notes/videos/{file.filename}'})
+
+@app.route('/notes/images/<filename>')
+def get_uploaded_image(filename):
+    return send_from_directory(app.config['UPLOAD_IMAGE_FOLDER'], filename)
+
+@app.route('/notes/videos/<filename>')
+def get_uploaded_video(filename):
+    return send_from_directory(app.config['UPLOAD_VIDEO_FOLDER'], filename)
+
+@app.route('/save/<int:note_id>', methods=['POST'])
+def save_note(note_id):
+    data = request.json
+    new_content = data.get("content", "")
+
+    with sqlite3.connect(DB_FILE) as conn:
+        c = conn.cursor()
+        c.execute("SELECT filename FROM notes WHERE id = ?", (note_id,))
+        note = c.fetchone()
+
+        if note:
+            filepath = os.path.join(NOTES_DIR, note[0])
+            with open(filepath, 'w') as f:
+                f.write(new_content)
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "error": "Note not found"}), 404
+
+
+@app.route('/note/<int:note_id>')
+def view_note(note_id):
+    with sqlite3.connect(DB_FILE) as conn:
+        c = conn.cursor()
+        c.execute("SELECT title, filename FROM notes WHERE id = ?", (note_id,))
+        note = c.fetchone()
+
+    if not note:
+        return "Note not found", 404
+
+    with open(os.path.join(NOTES_DIR, note[1]), 'r') as f:
+        content = f.read()
+
+    html_content = markdown.markdown(content)
+    return render_template('note.html', title=note[0], content=html_content, note_id=note_id)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
