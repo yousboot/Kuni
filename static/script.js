@@ -2,32 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded and parsed");
 });
 
-function showNote(noteId) {
-  let modal = document.getElementById("modal");
-  let modalContent = document.getElementById("modal-content");
-
-  if (!modal || !modalContent) {
-    console.error("Error: Modal elements not found");
-    return;
-  }
-
-  fetch(`/templates/show/${noteId}`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Failed to fetch note content");
-      }
-      return response.text();
-    })
-    .then((html) => {
-      modalContent.innerHTML = html;
-      modal.classList.remove("hidden");
-      modal.style.display = "flex";
-    })
-    .catch((error) => {
-      console.error("Error loading note:", error);
-    });
-}
-
 function closeModal() {
   let modal = document.getElementById("modal");
   if (modal) {
@@ -326,7 +300,9 @@ function closeNotePopup() {
   document.getElementById("notePopup").classList.add("hidden");
 }
 
-function submitNote() {
+function submitNote(event) {
+  event.preventDefault(); // Prevent default form submission
+
   let title = document.getElementById("noteTitle").value;
   let folderId = document.getElementById("noteFolder").value;
   let subtitle = document.getElementById("noteSubtitle").value;
@@ -336,27 +312,29 @@ function submitNote() {
     return;
   }
 
-  fetch("/add_note", {
+  fetch("/add", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title: title,
-      folder_id: folderId,
-      subtitle: subtitle,
-    }),
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ title, folder_id: folderId, subtitle }),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Note created successfully!");
         closeNotePopup();
-        window.location.reload(); // Reload to update the notes list
+        window.location.href = "/";
       } else {
         alert("Error creating note: " + data.error);
       }
     })
     .catch((error) => console.error("Error:", error));
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  let noteForm = document.getElementById("noteForm");
+  if (noteForm) {
+    noteForm.addEventListener("submit", submitNote);
+  }
+});
 
 document.addEventListener("DOMContentLoaded", function () {
   let activeFolderId = localStorage.getItem("activeFolder");
@@ -406,3 +384,10 @@ function setActiveFolder(selectedElement, folderId) {
     })
     .catch((error) => console.error("Error fetching notes:", error));
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const notePopup = document.getElementById("notePopup");
+  notePopup.addEventListener("click", (e) => {
+    if (e.target === notePopup) closeNotePopup();
+  });
+});

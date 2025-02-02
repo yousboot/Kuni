@@ -90,7 +90,11 @@ def delete_folder(folder_id):
 
 @app.route('/add', methods=['POST'])
 def add_note():
-    data = request.json
+    if request.is_json:  # If JSON request
+        data = request.get_json()
+    else:  # If form submission
+        data = request.form
+
     title = data.get('title')
     folder_id = data.get('folder_id')
     subtitle = data.get('subtitle', '')
@@ -111,6 +115,7 @@ def add_note():
         conn.commit()
 
     return jsonify({"success": True})
+
 
 @app.route('/edit/<int:note_id>', methods=['GET', 'POST'])
 def edit_note(note_id):
