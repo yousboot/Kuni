@@ -20,138 +20,83 @@
     <div class="min-h-screen flex">
       <!-- Sidebar for Folders -->
 
-      <div class="w-1/4 px-10 py-10 ">
-        <img
-          src="/static/img/icon.png"
-          alt="App Icon"
-          class="w-[1/2] mb-6 h-[1/2]"
-        />
-        <form
-          action="{{ url_for('add_folder') }}"
-          method="post"
-          class="flex bg-white rounded-full p-2 mb-10 gap-2"
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="New Folder"
-            required
-            class="w-full p-2 pl-4 rounded-full border-white focus:border-white focus:ring-white focus:outline-none"
-          />
-
-          <button
-            type="submit"
-            class="bg-custom-sidebar text-white text-2xl text-white p-3 py-1 rounded-full"
+      <div class="w-1/6  py-10 border-r  ">
+        <div class="flex flex-col items-center">
+          <span class="logo mb-14">M</span>
+          <form
+            action="{{ url_for('add_folder') }}"
+            method="post"
+            class="relative flex p-2 mb-4 bg-custom-color w-full"
           >
-            +
-          </button>
-        </form>
-        <ul class="gap-2">
-          {% for folder in folders %}
-          <li
-            class="group flex mb-3 justify-between bg-contain bg-no-repeat items-center py-4 p-2 rounded-md cursor-pointer"
-            style="background-image: url('/static/img/folder.jpg');"
-            onclick="window.location='{{ url_for('index', folder_id=folder[0]) }}';"
-          >
-            <span
-              class="font-janna font-bold mt-1 ml-4 text-white text-opacity-60 folder-name"
-            >
-              {{ folder[1][:25] ~ '...' if folder[1]|length > 28 else folder[1]
-              }}
-            </span>
-            <div
-              class="flex gap-4 text-xl opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-            >
-              <a
-                href="{{ url_for('edit_folder', folder_id=folder[0]) }}"
-                class="text-yellow-500 hover:opacity-40"
-              >
-                ✏️
-              </a>
-              <form
-                action="{{ url_for('delete_folder', folder_id=folder[0]) }}"
-                method="post"
-              >
-                <button
-                  type="submit"
-                  class="text-red-500 hover:opacity-40"
-                  onclick="return confirm('Are you sure?')"
-                >
-                  🗑️
-                </button>
-              </form>
+            <div class="relative w-full px-4">
+              <input
+                type="text"
+                name="name"
+                placeholder="New Folder"
+                required
+                class="w-full font-janna p-2 pl-4 pr-10 bg-custom-color focus:outline-none border-gray-400  border rounded-lg"
+              />
             </div>
-          </li>
-          {% endfor %}
-        </ul>
+          </form>
+        </div>
+
+        <div class="ml-4">
+          <ul
+            class="gap-2"
+            id="folderList"
+          >
+            {% for folder in folders %}
+            <li
+              class="group flex mb-3 justify-between items-center py-1 px-2 mr-2 rounded-md cursor-pointer transition-all duration-200 bg-custom-slidebar"
+              data-folder-id="{{ folder[0] }}"
+              onclick="setActiveFolder(this, '{{ folder[0] }}')"
+            >
+              <span
+                class="font-garamond text-xl font-bold mt-1 ml-4 folder-name"
+              >
+                {{ folder[1][:25] ~ '...' if folder[1]|length > 28 else
+                folder[1] }}
+              </span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
 
       <!-- Main Content for Notes -->
-      <div class="flex-1 px-20 py-20  flex flex-col bg-[#f1f1ef]">
-        <form
-          action="{{ url_for('add_note') }}"
-          method="post"
-          class="flex gap-2 mb-10 bg-white px-4 py-3 rounded-full"
-        >
-          <input
-            type="text"
-            name="title"
-            placeholder="Note Title"
-            required
-            class="w-full p-3 pl-6 rounded-l-3xl rounded-r-md border-white focus:border-white focus:ring-white focus:outline-none"
-          />
-          <select
-            name="folder_id"
-            class="p-2 bg-custom-slidebar rounded-md"
-          >
-            {% for folder in folders %}
-            <option value="{{ folder[0] }}">{{ folder[1] }}</option>
-            {% endfor %}
-          </select>
-          <button
-            type="submit"
-            class="bg-custom-sidebar  text-white text-xl rounded-r-3xl rounded-l-md text-white p-3 py-1 rounded-full"
-          >
-            +
-          </button>
-        </form>
-        <ul class="space-y-4 flex-grow overflow-y-auto">
-          {% for note in notes %}
-          <li
-            class=" px-6 py-5 rounded-xl text-black text-opacity-50 bg-custom-slidebar cursor-pointer flex justify-between items-center"
-          >
-            <a
-              href="{{ url_for('view_note', note_id=note[0]) }}"
-              class="w-4/5"
-            >
-              <span class="ml-4 font-futurabkbt text-lg font-bold">
-                {{ note[1] }}
-              </span>
-            </a>
+      <div class="flex-1   pb-20  flex flex-col bg-[#f1f1ef]">
+        <div class="cover-image mb-6"></div>
 
-            <div class="space-x-4">
+        <div class="px-20">
+          <div class="flex flex-row justify-end">
+            <button
+              onclick="openNotePopup()"
+              class="bg-custom-color2 font-janna text-white px-6 py-3 rounded-md mb-4"
+            >
+              New Note
+            </button>
+          </div>
+
+          <ul
+            class="notes-list space-y-4 flex-grow overflow-y-auto"
+            id="notesList"
+          >
+            {% for note in notes %}
+            <li
+              class="px-6 py-5 border-b-2 text-black text-opacity-50 bg-custom-slidebar cursor-pointer flex justify-between items-center transition-all duration-200 hover:rounded-md"
+            >
               <a
-                href="{{ url_for('edit_note', note_id=note[0]) }}"
-                class="text-yellow-500"
+                href="{{ url_for('view_note', note_id=note[0]) }}"
+                class="w-4/5"
               >
-                ✏️
+                <span class="ml-4 font-futurabkbt text-lg font-bold">
+                  {{ note[1] }}
+                </span>
               </a>
-              <form
-                action="{{ url_for('delete_note', note_id=note[0]) }}"
-                method="post"
-                class="inline"
-              >
-                <button
-                  type="submit"
-                  class="text-red-500 hover:underline"
-                  onclick="return confirm('Are you sure?')"
-                ></button>
-                🗑️
-              </form>
-            </div>
-          </li>
-          {% endfor %}
-        </ul>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -168,6 +113,67 @@
           ✕
         </button>
         <div id="modal-content"></div>
+      </div>
+    </div>
+
+    <!-- Note Creation Popup -->
+    <div
+      id="notePopup"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden"
+    >
+      <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative">
+        <button
+          onclick="closeNotePopup()"
+          class="absolute top-2 right-2 text-gray-500 hover:text-gray-900"
+        >
+          ✕
+        </button>
+
+        <h2 class="text-lg font-bold mb-4">Create a New Note</h2>
+
+        <form
+          id="noteForm"
+          action="{{ url_for('add_note') }}"
+          method="post"
+        >
+          <div class="mb-4">
+            <label class="block text-gray-700">Title</label>
+            <input
+              type="text"
+              name="title"
+              required
+              class="w-full p-2 border rounded-md"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-700">Folder</label>
+            <select
+              name="folder_id"
+              class="w-full p-2 border rounded-md"
+            >
+              {% for folder in folders %}
+              <option value="{{ folder[0] }}">{{ folder[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-700">Subtitle</label>
+            <input
+              type="text"
+              name="subtitle"
+              class="w-full p-2 border rounded-md"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white p-2 rounded-md"
+          >
+            Create Note
+          </button>
+        </form>
       </div>
     </div>
   </body>

@@ -49,15 +49,11 @@ init_db()
 
 @app.route('/')
 def index():
-    folder_id = request.args.get('folder_id', type=int)
     with sqlite3.connect(DB_FILE) as conn:
         c = conn.cursor()
         c.execute("SELECT id, name FROM folders")
         folders = c.fetchall()
-        if folder_id:
-            c.execute("SELECT id, title FROM notes WHERE folder_id = ?", (folder_id,))
-        else:
-            c.execute("SELECT id, title FROM notes")
+        c.execute("SELECT id, title FROM notes")
         notes = c.fetchall()
     return render_template('index.html', notes=notes, folders=folders)
 
@@ -94,17 +90,27 @@ def delete_folder(folder_id):
 
 @app.route('/add', methods=['POST'])
 def add_note():
-    title = request.form['title']
-    folder_id = request.form['folder_id']
+    data = request.json
+    title = data.get('title')
+    folder_id = data.get('folder_id')
+    subtitle = data.get('subtitle', '')
+
+    if not title or not folder_id:
+        return jsonify({"success": False, "error": "Missing title or folder ID"}), 400
+
     filename = f"{title}.md"
     filepath = os.path.join(NOTES_DIR, filename)
+
     with open(filepath, 'w') as f:
-        f.write("# New Note\n")
+        f.write(f"# {title}\n\n### {subtitle}\n\n")
+
     with sqlite3.connect(DB_FILE) as conn:
         c = conn.cursor()
-        c.execute("INSERT INTO notes (title, filename, folder_id) VALUES (?, ?, ?)", (title, filename, folder_id))
+        c.execute("INSERT INTO notes (title, filename, folder_id, subtitle) VALUES (?, ?, ?, ?)", 
+                  (title, filename, folder_id, subtitle))
         conn.commit()
-    return redirect(url_for('index'))
+
+    return jsonify({"success": True})
 
 @app.route('/edit/<int:note_id>', methods=['GET', 'POST'])
 def edit_note(note_id):
@@ -217,6 +223,25 @@ def view_note(note_id):
 
     html_content = markdown.markdown(content)
     return render_template('note.html', title=note[0], content=html_content, note_id=note_id)
+
+@app.route('/get_notes', methods=['GET'])
+def get_notes():
+    folder_id = request.args.get('folder_id')
+
+    if not folder_id:
+        return jsonify({"error": "Missing folder_id parameter"}), 400
+
+    try:
+        folder_id = int(folder_id)
+    except ValueError:
+        return jsonify({"error": "Invalid folder_id parameter"}), 400
+
+    with sqlite3.connect(DB_FILE) as conn:
+        c = conn.cursor()
+        c.execute("SELECT id, title FROM notes WHERE folder_id = ?", (folder_id,))
+        notes = [{"id": row[0], "title": row[1]} for row in c.fetchall()]
+    return jsonify(notes)
+
 
 
 if __name__ == '__main__':

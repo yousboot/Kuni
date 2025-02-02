@@ -26,6 +26,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Lovtony";
+  src: url("/static/fonts/Lovtony\ Script.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .font-janna {
   font-family: "Janna", sans-serif;
 }
@@ -40,6 +47,16 @@
 
 .font-madani {
   font-family: "Madani", sans-serif;
+}
+
+.font-lovtony {
+  font-family: "Lovtony", sans-serif;
+}
+
+.logo {
+  font-family: "Lovtony", sans-serif;
+  font-size: 50px;
+  font-weight: bold;
 }
 
 .modal {
@@ -72,12 +89,16 @@
 }
 
 .bg-custom-slidebar {
-  background-color: #e9e2dd;
+  background-color: #f5f3f0;
   transition: background-color 0.3s ease-in-out;
 }
 
 .bg-custom-slidebar:hover {
-  background-color: #cdc0b7;
+  background-color: #eae5e3;
+}
+
+.bg-custom-folder {
+  background-color: #eae5e3;
 }
 
 .bg-custom-content {
@@ -85,13 +106,38 @@
 }
 
 .bg-custom-color {
-  background-color: #f7f6f4;
+  background-color: #f5f3f0;
+}
+
+.bg-custom-color1 {
+  background-color: #f6f3f0;
+}
+
+.bg-custom-color2 {
+  background-color: #b7b4b1;
+}
+
+.bg-custom-color2:hover {
+  background-color: #7b7a77;
+}
+
+.bg-custom-color3 {
+  background-color: #7b7a77;
+}
+
+.bg-custom-color4 {
+  background-color: #2b2b2b;
 }
 
 .bg-folder {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.bg-grid {
+  background: url("/static/img/grid.jpg") no-repeat center center;
+  background-size: cover;
 }
 
 .tool-btn {
@@ -141,4 +187,13 @@
 .prose pre code,
 .prose table {
   font-family: initial;
+}
+
+.cover-image {
+  width: 100%;
+  height: 150px; /* Adjust to desired height */
+  background-image: url("/static/img/cover.png");
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px; /* Optional */
 }
