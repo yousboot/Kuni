@@ -302,3 +302,107 @@ function shareNote(noteId) {
     .then((data) => alert(data.message || "Note shared successfully"))
     .catch((error) => alert("Failed to share note"));
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM fully loaded and parsed");
+
+  let folderInput = document.querySelector('input[name="name"]');
+
+  if (folderInput) {
+    folderInput.addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault(); // Prevents any unintended behavior
+        this.form.submit();
+      }
+    });
+  }
+});
+
+function openNotePopup() {
+  document.getElementById("notePopup").classList.remove("hidden");
+}
+
+function closeNotePopup() {
+  document.getElementById("notePopup").classList.add("hidden");
+}
+
+function submitNote() {
+  let title = document.getElementById("noteTitle").value;
+  let folderId = document.getElementById("noteFolder").value;
+  let subtitle = document.getElementById("noteSubtitle").value;
+
+  if (!title || !folderId) {
+    alert("Title and folder are required.");
+    return;
+  }
+
+  fetch("/add_note", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: title,
+      folder_id: folderId,
+      subtitle: subtitle,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Note created successfully!");
+        closeNotePopup();
+        window.location.reload(); // Reload to update the notes list
+      } else {
+        alert("Error creating note: " + data.error);
+      }
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  let activeFolderId = localStorage.getItem("activeFolder");
+
+  if (activeFolderId) {
+    let activeElement = document.querySelector(
+      `[data-folder-id='${activeFolderId}']`
+    );
+    if (activeElement) {
+      setActiveFolder(activeElement, activeFolderId);
+    }
+  }
+});
+
+function setActiveFolder(selectedElement, folderId) {
+  // Remove active styling from all folders
+  document.querySelectorAll("#folderList li").forEach((folder) => {
+    folder.classList.remove("bg-custom-folder", "text-gray-700");
+    folder.classList.add("bg-custom-slidebar");
+  });
+
+  // Add active styling to the selected folder
+  selectedElement.classList.remove("bg-custom-slidebar");
+  selectedElement.classList.add("bg-custom-folder", "text-gray-700");
+
+  // Save active folder in localStorage
+  localStorage.setItem("activeFolder", folderId);
+
+  // Fetch notes dynamically and update the UI
+  fetch(`/get_notes?folder_id=${folderId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      let notesList = document.getElementById("notesList");
+      notesList.innerHTML = ""; // Clear current notes list
+
+      if (data.length === 0) {
+        notesList.innerHTML = "";
+      } else {
+        data.forEach((note) => {
+          let li = document.createElement("li");
+          li.className =
+            "px-6 py-5 border-b-2 text-black text-opacity-50 bg-custom-slidebar cursor-pointer flex justify-between items-center transition-all duration-200 hover:rounded-md";
+          li.innerHTML = `<a href="/note/${note.id}" class="w-4/5"><span class="ml-4 font-futurabkbt text-lg font-bold">${note.title}</span></a>`;
+          notesList.appendChild(li);
+        });
+      }
+    })
+    .catch((error) => console.error("Error fetching notes:", error));
+}
