@@ -243,8 +243,8 @@ def get_notes():
 
     with sqlite3.connect(DB_FILE) as conn:
         c = conn.cursor()
-        c.execute("SELECT id, title FROM notes WHERE folder_id = ?", (folder_id,))
-        notes = [{"id": row[0], "title": row[1]} for row in c.fetchall()]
+        c.execute("SELECT id, title, subtitle FROM notes WHERE folder_id = ?", (folder_id,))
+        notes = [{"id": row[0], "title": row[1], "subtitle": row[2]} for row in c.fetchall()]
     return jsonify(notes)
 
 

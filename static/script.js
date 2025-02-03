@@ -350,37 +350,43 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function setActiveFolder(selectedElement, folderId) {
-  // Remove active styling from all folders
   document.querySelectorAll("#folderList li").forEach((folder) => {
     folder.classList.remove("bg-custom-folder", "text-gray-700");
     folder.classList.add("bg-custom-slidebar");
   });
-
-  // Add active styling to the selected folder
   selectedElement.classList.remove("bg-custom-slidebar");
   selectedElement.classList.add("bg-custom-folder", "text-gray-700");
-
-  // Save active folder in localStorage
   localStorage.setItem("activeFolder", folderId);
-
-  // Fetch notes dynamically and update the UI
   fetch(`/get_notes?folder_id=${folderId}`)
     .then((response) => response.json())
     .then((data) => {
       let notesList = document.getElementById("notesList");
-      notesList.innerHTML = ""; // Clear current notes list
-
-      if (data.length === 0) {
-        notesList.innerHTML = "";
-      } else {
-        data.forEach((note) => {
-          let li = document.createElement("li");
-          li.className =
-            "px-6 py-5 border-b-2 text-black text-opacity-50 bg-custom-slidebar cursor-pointer flex justify-between items-center transition-all duration-200 hover:rounded-md";
-          li.innerHTML = `<a href="/note/${note.id}" class="w-4/5"><span class="ml-4 font-futurabkbt text-lg font-bold">${note.title}</span></a>`;
-          notesList.appendChild(li);
-        });
-      }
+      notesList.className = "grid grid-cols-2 gap-4"; // set grid layout
+      notesList.innerHTML = "";
+      data.forEach((note) => {
+        let li = document.createElement("li");
+        li.className =
+          "group p-6 border-b bg-custom-slidebar transition duration-200 hover:rounded-md";
+        li.innerHTML = `
+        <div class="flex flex-row justify-between">
+          <a href="/note/${note.id}" class="block">
+            <div class="gap-2 flex flex-col">
+              <span class="font-futurabkbt text-lg font-bold">${note.title}</span>
+              <p class="font-nexa text-md text-gray-500">${note.subtitle}</p>
+            </div>
+          </a>
+          <div class="flex space-x-2 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <button onclick="editNote(${note.id})">
+              <img src="/static/svg/edit.svg" alt="Edit" class="w-5 h-5">
+            </button>
+            <button onclick="deleteNote(${note.id})">
+              <img src="/static/svg/delete.svg" alt="Delete" class="w-5 h-5">
+            </button>
+          </div>
+        </div>
+        `;
+        notesList.appendChild(li);
+      });
     })
     .catch((error) => console.error("Error fetching notes:", error));
 }
@@ -390,4 +396,110 @@ document.addEventListener("DOMContentLoaded", () => {
   notePopup.addEventListener("click", (e) => {
     if (e.target === notePopup) closeNotePopup();
   });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const noteForm = document.getElementById("noteForm");
+  noteForm.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      noteForm.dispatchEvent(new Event("submit", { cancelable: true }));
+    }
+  });
+});
+
+function editNote(noteId) {
+  window.location.href = `/edit/${noteId}`;
+}
+
+let noteToDelete = null;
+function deleteNote(noteId) {
+  noteToDelete = noteId;
+  document.getElementById("deletePopup").classList.remove("hidden");
+}
+function closeDeletePopup() {
+  document.getElementById("deletePopup").classList.add("hidden");
+  noteToDelete = null;
+}
+document.addEventListener("DOMContentLoaded", () => {
+  document
+    .getElementById("confirmDeleteButton")
+    .addEventListener("click", () => {
+      if (noteToDelete) {
+        fetch(`/delete/${noteToDelete}`, { method: "POST" })
+          .then(() => {
+            closeDeletePopup();
+            window.location.reload();
+          })
+          .catch((err) => {
+            console.error("Error deleting note:", err);
+            closeDeletePopup();
+          });
+      }
+    });
+});
+
+function editFolder(folderId) {
+  const folderLi = document.querySelector(`li[data-folder-id='${folderId}']`);
+  const span = folderLi.querySelector(".folder-name");
+  const currentName = span.textContent.trim();
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = currentName;
+  input.className =
+    "folder-name text-xl font-garamond font-bold bg-custom-folder mt-1 ml-4 border-none focus:border-none focus:outline-none";
+  folderLi.replaceChild(input, span);
+  input.focus();
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      fetch(`/edit_folder/${folderId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ name: input.value }),
+      })
+        .then((res) => {
+          if (res.ok) {
+            const newSpan = document.createElement("span");
+            newSpan.textContent = input.value;
+            newSpan.className =
+              "folder-name font-garamond text-xl font-bold mt-1 ml-4";
+            folderLi.replaceChild(newSpan, input);
+          } else {
+            alert("Error updating folder.");
+          }
+        })
+        .catch((err) => {
+          console.error("Error updating folder:", err);
+          alert("Error updating folder.");
+        });
+    }
+  });
+}
+
+let folderToDelete = null;
+function deleteFolder(folderId) {
+  folderToDelete = folderId;
+  document.getElementById("deleteFolderPopup").classList.remove("hidden");
+}
+function closeDeleteFolderPopup() {
+  document.getElementById("deleteFolderPopup").classList.add("hidden");
+  folderToDelete = null;
+}
+document.addEventListener("DOMContentLoaded", () => {
+  document
+    .getElementById("confirmDeleteFolderButton")
+    .addEventListener("click", () => {
+      if (folderToDelete) {
+        fetch(`/delete_folder/${folderToDelete}`, { method: "POST" })
+          .then(() => {
+            closeDeleteFolderPopup();
+            window.location.reload();
+          })
+          .catch((err) => {
+            console.error("Error deleting folder:", err);
+            closeDeleteFolderPopup();
+          });
+      }
+    });
 });

@@ -33,6 +33,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Nexa";
+  src: url("/static/fonts/Nexa\ Light.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .font-janna {
   font-family: "Janna", sans-serif;
 }
@@ -51,6 +58,10 @@
 
 .font-lovtony {
   font-family: "Lovtony", sans-serif;
+}
+
+.font-nexa {
+  font-family: "Nexa", sans-serif;
 }
 
 .logo {
