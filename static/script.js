@@ -366,12 +366,12 @@ function setActiveFolder(selectedElement, folderId) {
       data.forEach((note) => {
         let li = document.createElement("li");
         li.className =
-          "group p-6 border-b bg-custom-slidebar transition duration-200 hover:rounded-md";
+          "group p-6 border-b bg-custom-folder rounded-2xl transition duration-200 hover:rounded-md";
         li.innerHTML = `
-        <div class="flex flex-row justify-between">
+        <div class="flex flex-row justify-between ">
           <a href="/note/${note.id}" class="block">
             <div class="gap-2 flex flex-col">
-              <span class="font-futurabkbt text-lg font-bold">${note.title}</span>
+              <span class="font-europabold opacity-85 text-lg font-bold">${note.title}</span>
               <p class="font-nexa text-md text-gray-500">${note.subtitle}</p>
             </div>
           </a>

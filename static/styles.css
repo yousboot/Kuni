@@ -40,6 +40,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "EuropaBold";
+  src: url("/static/fonts/Europa.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .font-janna {
   font-family: "Janna", sans-serif;
 }
@@ -62,6 +69,10 @@
 
 .font-nexa {
   font-family: "Nexa", sans-serif;
+}
+
+.font-europaBold {
+  font-family: "EuropaBold", sans-serif;
 }
 
 .logo {
@@ -102,10 +113,6 @@
 .bg-custom-slidebar {
   background-color: #f5f3f0;
   transition: background-color 0.3s ease-in-out;
-}
-
-.bg-custom-slidebar:hover {
-  background-color: #eae5e3;
 }
 
 .bg-custom-folder {
