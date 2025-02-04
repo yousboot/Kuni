@@ -49,9 +49,9 @@
             <li
               data-folder-id="{{ folder[0] }}"
               class="group flex mb-3 justify-between items-center py-1 px-2 mr-2 rounded-md cursor-pointer transition-all duration-200 bg-custom-slidebar"
+              onclick="setActiveFolder(this, '{{ folder[0] }}')"
             >
               <span
-                onclick="setActiveFolder(this.parentElement, '{{ folder[0] }}')"
                 class="font-garamond text-xl font-bold mt-1 ml-4 folder-name"
               >
                 {{ folder[1][:25] ~ '...' if folder[1]|length > 28 else

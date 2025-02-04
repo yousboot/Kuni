@@ -215,3 +215,16 @@
   background-position: center;
   border-radius: 10px; /* Optional */
 }
+
+.note-title,
+.note-subtitle {
+  max-width: 450px;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Prevent text from wrapping to the next line */
+}
+
+.note-subtitle {
+  white-space: normal; /* Allow subtitle to wrap to the next line */
+}

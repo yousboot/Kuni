@@ -293,6 +293,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function openNotePopup() {
+  let activeFolderId = localStorage.getItem("activeFolder");
+  let folderSelect = document.getElementById("noteFolder");
+
+  if (folderSelect && activeFolderId) {
+    folderSelect.value = activeFolderId;
+  }
+
   document.getElementById("notePopup").classList.remove("hidden");
 }
 
@@ -368,22 +375,22 @@ function setActiveFolder(selectedElement, folderId) {
         li.className =
           "group p-6 border-b bg-custom-folder rounded-2xl transition duration-200 hover:rounded-md";
         li.innerHTML = `
-        <div class="flex flex-row justify-between ">
-          <a href="/note/${note.id}" class="block">
-            <div class="gap-2 flex flex-col">
-              <span class="font-europabold opacity-85 text-lg font-bold">${note.title}</span>
-              <p class="font-nexa text-md text-gray-500">${note.subtitle}</p>
+          <div class="flex flex-row justify-between">
+            <a href="/note/${note.id}" class="block">
+              <div class="gap-2 flex flex-col">
+                <span class="note-title font-europabold opacity-85 text-lg font-bold">${note.title}</span>
+                <p class="note-subtitle font-nexa text-md text-gray-500">${note.subtitle}</p>
+              </div>
+            </a>
+            <div class="flex space-x-2 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button onclick="editNote(${note.id})">
+                <img src="/static/svg/edit.svg" alt="Edit" class="w-5 h-5">
+              </button>
+              <button onclick="deleteNote(${note.id})">
+                <img src="/static/svg/delete.svg" alt="Delete" class="w-5 h-5">
+              </button>
             </div>
-          </a>
-          <div class="flex space-x-2 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <button onclick="editNote(${note.id})">
-              <img src="/static/svg/edit.svg" alt="Edit" class="w-5 h-5">
-            </button>
-            <button onclick="deleteNote(${note.id})">
-              <img src="/static/svg/delete.svg" alt="Delete" class="w-5 h-5">
-            </button>
           </div>
-        </div>
         `;
         notesList.appendChild(li);
       });
@@ -502,4 +509,17 @@ document.addEventListener("DOMContentLoaded", () => {
           });
       }
     });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const titleInput = document.getElementById("noteTitle");
+  const subtitleInput = document.getElementById("noteSubtitle");
+
+  titleInput.addEventListener("input", function () {
+    if (this.value.length > 67) this.value = this.value.slice(0, 70);
+  });
+
+  subtitleInput.addEventListener("input", function () {
+    if (this.value.length > 250) this.value = this.value.slice(0, 200);
+  });
 });
