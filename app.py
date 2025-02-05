@@ -106,7 +106,7 @@ def add_note():
     filepath = os.path.join(NOTES_DIR, filename)
 
     with open(filepath, 'w') as f:
-        f.write(f"# {title}\n\n### {subtitle}\n\n")
+        f.write(f"")
 
     with sqlite3.connect(DB_FILE) as conn:
         c = conn.cursor()
@@ -131,22 +131,6 @@ def edit_note(note_id):
     with open(os.path.join(NOTES_DIR, note[1]), 'r') as f:
         content = f.read()
     return render_template('edit.html', title=note[0], content=content, note_id=note_id)
-
-@app.route('/show/<int:note_id>')
-def show_note(note_id):
-    with sqlite3.connect(DB_FILE) as conn:
-        c = conn.cursor()
-        c.execute("SELECT title, filename FROM notes WHERE id = ?", (note_id,))
-        note = c.fetchone()
-
-    if not note:
-        return "Note not found", 404
-
-    with open(os.path.join(NOTES_DIR, note[1]), 'r') as f:
-        content = f.read()
-
-    html_content = markdown.markdown(content)
-    return render_template('show.html', title=note[0], content=html_content)
 
 @app.route('/delete/<int:note_id>', methods=['POST'])
 def delete_note(note_id):
@@ -217,7 +201,7 @@ def save_note(note_id):
 def view_note(note_id):
     with sqlite3.connect(DB_FILE) as conn:
         c = conn.cursor()
-        c.execute("SELECT title, filename FROM notes WHERE id = ?", (note_id,))
+        c.execute("SELECT title, filename, subtitle FROM notes WHERE id = ?", (note_id,))
         note = c.fetchone()
 
     if not note:
@@ -227,7 +211,7 @@ def view_note(note_id):
         content = f.read()
 
     html_content = markdown.markdown(content)
-    return render_template('note.html', title=note[0], content=html_content, note_id=note_id)
+    return render_template('note.html', title=note[0], subtitle=note[2], content=html_content, note_id=note_id)
 
 @app.route('/get_notes', methods=['GET'])
 def get_notes():

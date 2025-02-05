@@ -47,6 +47,39 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "RodenBold";
+  src: url("/static/fonts/RodenBold.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "RodenRegular";
+  src: url("/static/fonts/RodenRegular.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Didot";
+  src: url("/static/fonts/Didot.ttc") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-didot {
+  font-family: "Didot", serif;
+}
+
+.font-rodenregular {
+  font-family: "RodenRegular", sans-serif;
+}
+
+.font-rodenbold {
+  font-family: "RodenBold", sans-serif;
+}
+
 .font-janna {
   font-family: "Janna", sans-serif;
 }
@@ -159,8 +192,6 @@
 }
 
 .tool-btn {
-  background: #e2e8f0;
-  padding: 6px 12px;
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s;
@@ -227,4 +258,13 @@
 
 .note-subtitle {
   white-space: normal; /* Allow subtitle to wrap to the next line */
+}
+
+.text-gradient {
+  background-image: linear-gradient(
+    to right,
+    #51e685,
+    /* green-200 */ #0f766e,
+    /* teal-700 */ #581c87 /* purple-900 */
+  );
 }

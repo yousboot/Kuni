@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      href="/static/tailwind.min.css"
       rel="stylesheet"
     />
     <style>
@@ -21,17 +21,38 @@
     </style>
   </head>
   <body class="bg-custom-color text-gray-800">
-    <div class="max-w-4xl mx-auto mt-10 p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-madani">{{ title }}</h1>
-        <a
-          href="{{ url_for('edit_note', note_id=note_id) }}"
-          class="px-4 py-2 rounded"
-        >
-          ✏️
-        </a>
+    <div class="max-w-4xl mx-auto pt-24 items-center flex flex-col">
+      <div class="flex flex-col mb-4 w-full">
+        <!-- Title and Edit Icon Row -->
+        <div class="flex justify-between items-center w-full">
+          <!-- Title -->
+          <div
+            class="text-5xl font-rodenregular text-gradient inline-block text-transparent bg-clip-text leading-tight"
+          >
+            {{ title }}
+          </div>
+
+          <!-- Edit Icon -->
+          <a
+            href="{{ url_for('edit_note', note_id=note_id) }}"
+            class="px-4 py-2 rounded "
+          >
+            <img
+              src="/static/svg/edit.svg"
+              alt="Edit"
+              class="w-5 h-5"
+            />
+          </a>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="text-xl font-nexa text-gray-800 opacity-80">
+          {{ subtitle }}
+        </div>
       </div>
-      <div class="prose max-w-none">{{ content | safe }}</div>
+
+      <!-- Content -->
+      <div class="prose max-w-none w-full">{{ content | safe }}</div>
     </div>
   </body>
 </html>

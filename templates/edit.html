@@ -9,6 +9,10 @@
     <title>Edit Note</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
+      href="/static/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
       href="/static/styles.css"
       rel="stylesheet"
     />
@@ -22,209 +26,263 @@
       #editor pre code, #editor table { font-family: initial; }
     </style>
   </head>
-  <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-    <header class="bg-white shadow-md p-4 flex justify-between items-center">
-      <h1 class="text-2xl font-madani">Editing: {{ title }}</h1>
-      <button
-        id="saveButton"
-        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-        data-note-id="{{ note_id }}"
-      >
-        Save
-      </button>
-    </header>
-    <div class="flex flex-col items-center mt-4">
-      <!-- Toolbar -->
+  <body class="bg-custom-color">
+    <div class="max-w-4xl mx-auto pt-24 items-center flex flex-col">
+      <div class="flex flex-col mb-4 w-full">
+        <!-- Toolbar -->
+        <div class="flex justify-between items-center w-full">
+          <div
+            class="text-5xl font-rodenregular text-gradient inline-block text-transparent bg-clip-text leading-tight"
+          >
+            {{ title }}
+          </div>
+
+          <button
+            id="saveButton"
+            data-note-id="{{ note_id }}"
+            class="px-4 py-4 flex mb-2 rounded"
+          >
+            <img
+              src="/static/svg/save.svg"
+              alt="Edit"
+              class="w-8 h-8"
+            />
+          </button>
+        </div>
+
+        <div class="text-xl font-nexa text-gray-800 opacity-80 ">
+          {{ subtitle }}
+        </div>
+
+        <div class="py-3 gap-8 items-center flex gap-2 w-3/4 justify-start">
+          <button
+            class="tool-btn"
+            onclick="insertElement('h1')"
+          >
+            <img
+              src="/static/svg/title.svg"
+              alt="Edit"
+              class="w-6 h-6"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="insertElement('h3')"
+          >
+            <img
+              src="/static/svg/header.svg"
+              alt="Edit"
+              class="w-7 h-7"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="insertElement('p')"
+          >
+            <img
+              src="/static/svg/paragraph.svg"
+              alt="Edit"
+              class="w-5 h-5"
+            />
+          </button>
+
+          <button
+            class="tool-btn"
+            onclick="showPopup('imagePopup')"
+          >
+            <img
+              src="/static/svg/image.svg"
+              alt="Edit"
+              class="w-4 h-4"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="showPopup('videoPopup')"
+          >
+            <img
+              src="/static/svg/video.svg"
+              alt="Edit"
+              class="w-5 h-5"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="showPopup('tablePopup')"
+          >
+            <img
+              src="/static/svg/table.svg"
+              alt="Edit"
+              class="w-5 h-5"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="showPopup('codePopup')"
+          >
+            <img
+              src="/static/svg/code.svg"
+              alt="Edit"
+              class="w-6 h-6"
+            />
+          </button>
+
+          <button
+            class="tool-btn"
+            onclick="insertElement('a')"
+          >
+            <img
+              src="/static/svg/link.svg"
+              alt="Edit"
+              class="w-5 h-5"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="insertElement('blockquote')"
+          >
+            <img
+              src="/static/svg/quote.svg"
+              alt="Edit"
+              class="w-5 h-5"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="insertElement('ol')"
+          >
+            <img
+              src="/static/svg/num-list.svg"
+              alt="Edit"
+              class="w-7 h-7"
+            />
+          </button>
+          <button
+            class="tool-btn"
+            onclick="insertElement('ul')"
+          >
+            <img
+              src="/static/svg/bullet-list.svg"
+              alt="Edit"
+              class="w-7 h-7"
+            />
+          </button>
+        </div>
+        <!-- Editable Content -->
+        <div
+          id="editor"
+          contenteditable="true"
+          class="mt-4 font-didot text-gray-800 text-2xl tracking-wider items-center focus:outline-none w-full min-h-[700px] py-6 px-2"
+        >
+          {{ content | safe }}
+        </div>
+      </div>
+
+      <!-- Popups -->
       <div
-        class="bg-white shadow p-3 rounded-md flex gap-2 w-3/4 justify-center"
+        id="imagePopup"
+        class="popup hidden"
       >
+        <input
+          type="text"
+          id="imageUrl"
+          placeholder="Enter Image URL"
+          class="input-field"
+        />
+        <input
+          type="file"
+          id="imageUpload"
+          accept="image/*"
+        />
         <button
-          class="tool-btn"
-          onclick="showPopup('imagePopup')"
+          onclick="uploadImage()"
+          class="popup-btn"
         >
-          Image
+          Upload
         </button>
         <button
-          class="tool-btn"
-          onclick="showPopup('videoPopup')"
+          onclick="insertImage(document.getElementById('imageUrl').value)"
+          class="popup-btn"
         >
-          Video
-        </button>
-        <button
-          class="tool-btn"
-          onclick="showPopup('tablePopup')"
-        >
-          Table
-        </button>
-        <button
-          class="tool-btn"
-          onclick="showPopup('codePopup')"
-        >
-          Code
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('h1')"
-        >
-          Title
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('h2')"
-        >
-          Subtitle
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('h3')"
-        >
-          Paragraph Title
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('p')"
-        >
-          Paragraph
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('a')"
-        >
-          Link
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('blockquote')"
-        >
-          Quote
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('ol')"
-        >
-          Numbered List
-        </button>
-        <button
-          class="tool-btn"
-          onclick="insertElement('ul')"
-        >
-          Bullet List
+          Insert
         </button>
       </div>
-      <!-- Editable Content -->
+
       <div
-        id="editor"
-        contenteditable="true"
-        class="bg-white shadow-md p-6 rounded-md mt-4 w-3/4 min-h-[400px] border border-gray-300 focus:ring focus:ring-blue-200"
+        id="videoPopup"
+        class="popup hidden"
       >
-        {{ content | safe }}
+        <input
+          type="text"
+          id="videoUrl"
+          placeholder="Enter YouTube URL"
+          class="input-field"
+        />
+        <input
+          type="file"
+          id="videoUpload"
+          accept="video/*"
+        />
+        <button
+          onclick="uploadVideo()"
+          class="popup-btn"
+        >
+          Upload
+        </button>
+        <button
+          onclick="insertVideo()"
+          class="popup-btn"
+        >
+          Insert
+        </button>
       </div>
-    </div>
 
-    <!-- Popups -->
-    <div
-      id="imagePopup"
-      class="popup hidden"
-    >
-      <input
-        type="text"
-        id="imageUrl"
-        placeholder="Enter Image URL"
-        class="input-field"
-      />
-      <input
-        type="file"
-        id="imageUpload"
-        accept="image/*"
-      />
-      <button
-        onclick="uploadImage()"
-        class="popup-btn"
+      <div
+        id="tablePopup"
+        class="popup hidden"
       >
-        Upload
-      </button>
-      <button
-        onclick="insertImage(document.getElementById('imageUrl').value)"
-        class="popup-btn"
-      >
-        Insert
-      </button>
-    </div>
+        <input
+          type="number"
+          id="tableRows"
+          placeholder="Rows"
+          class="input-field"
+        />
+        <input
+          type="number"
+          id="tableCols"
+          placeholder="Columns"
+          class="input-field"
+        />
+        <button
+          onclick="insertTable()"
+          class="popup-btn"
+        >
+          Insert
+        </button>
+      </div>
 
-    <div
-      id="videoPopup"
-      class="popup hidden"
-    >
-      <input
-        type="text"
-        id="videoUrl"
-        placeholder="Enter YouTube URL"
-        class="input-field"
-      />
-      <input
-        type="file"
-        id="videoUpload"
-        accept="video/*"
-      />
-      <button
-        onclick="uploadVideo()"
-        class="popup-btn"
+      <div
+        id="codePopup"
+        class="popup hidden"
       >
-        Upload
-      </button>
-      <button
-        onclick="insertVideo()"
-        class="popup-btn"
-      >
-        Insert
-      </button>
-    </div>
-
-    <div
-      id="tablePopup"
-      class="popup hidden"
-    >
-      <input
-        type="number"
-        id="tableRows"
-        placeholder="Rows"
-        class="input-field"
-      />
-      <input
-        type="number"
-        id="tableCols"
-        placeholder="Columns"
-        class="input-field"
-      />
-      <button
-        onclick="insertTable()"
-        class="popup-btn"
-      >
-        Insert
-      </button>
-    </div>
-
-    <div
-      id="codePopup"
-      class="popup hidden"
-    >
-      <input
-        type="text"
-        id="codeLanguage"
-        placeholder="Enter Language (e.g., python)"
-        class="input-field"
-      />
-      <textarea
-        id="codeContent"
-        class="input-field"
-        placeholder="Enter code..."
-      ></textarea>
-      <button
-        onclick="insertCode()"
-        class="popup-btn"
-      >
-        Insert
-      </button>
+        <input
+          type="text"
+          id="codeLanguage"
+          placeholder="Enter Language (e.g., python)"
+          class="input-field"
+        />
+        <textarea
+          id="codeContent"
+          class="input-field"
+          placeholder="Enter code..."
+        ></textarea>
+        <button
+          onclick="insertCode()"
+          class="popup-btn"
+        >
+          Insert
+        </button>
+      </div>
     </div>
   </body>
 </html>
